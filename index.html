@@ -1,0 +1,701 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Assignly</title>
+  <style>
+    /* Add your CSS styles here or link to an external stylesheet */
+    :root {
+      --primary-color: #2196F3;
+      --secondary-color: #f44336;
+      --card-bg: #fff;
+      --border-color: #ddd;
+      --text-color: #333;
+      --muted-color: #666;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f0f2f5;
+      color: var(--text-color);
+      margin: 0;
+      padding: 20px;
+    }
+
+    .wrap {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .nav {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+      border-bottom: 2px solid var(--border-color);
+      padding-bottom: 10px;
+    }
+
+    .nav button {
+      padding: 10px 15px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .nav .right {
+      margin-left: auto;
+    }
+
+    .nav.hidden {
+      display: none;
+    }
+
+    .screen {
+      display: none;
+    }
+
+    .screen.active {
+      display: block;
+    }
+
+    .card {
+      background-color: var(--card-bg);
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+
+    .card h2 {
+      margin-top: 0;
+    }
+
+    .grid {
+      display: grid;
+      gap: 20px;
+    }
+
+    .cols-2 {
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    }
+
+    .row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+
+    input,
+    textarea {
+      width: 100%;
+      padding: 10px;
+      box-sizing: border-box;
+      border: 1px solid var(--border-color);
+      border-radius: 5px;
+    }
+
+    button {
+      padding: 10px 15px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background-color 0.3s;
+    }
+
+    button[type="submit"] {
+      background-color: var(--primary-color);
+      color: white;
+    }
+
+    button[type="submit"]:hover {
+      background-color: #1976D2;
+    }
+
+    .secondary {
+      background-color: hwb(0 94% 6%)4% 6%;
+    }
+
+    .secondary:hover {
+      background-color: #e0e0e0;
+    }
+
+    .ghost {
+      background: none;
+      color: var(--text-color);
+    }
+
+    .ghost:hover {
+      background: #f0f0f0;
+    }
+
+    .muted {
+      color: var(--muted-color);
+      font-size: 0.9em;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .task-list {
+      display: grid;
+      gap: 15px;
+    }
+  </style>
+
+</head>
+
+<body>
+  <div class="wrap">
+    <h1>Assignly</h1>
+
+    <div id="topNav" class="nav hidden">
+      <button class="active" id="tabDashboardBtn">Dashboard</button>
+      <button class="active" id="tabClientBtn">Client: Create Task</button>
+      <button class="active" id="tabFreelancerBtn">Freelancer: View Tasks</button>
+      <span class="right row muted" id="userBadge"></span>
+      <button class="secondary" id="logoutBtn">Log out</button>
+    </div>
+
+    <section id="authScreen" class="screen active">
+      <div id="registerCard" class="card">
+        <h2>Register</h2>
+        <form id="registerForm" class="grid">
+          <div><label>Full Name</label><input id="regFullName" required /></div>
+          <div><label>Email</label><input id="regEmail" required /></div>
+          <div><label>Username</label><input id="regUsername" required /></div>
+          <div><label>Password</label><input id="regPassword" type="password" required /></div>
+          <button type="submit">Create account</button>
+        </form>
+        <p>Already have an account?</p>
+        <button type="button" id="showLoginBtn">Log in</button>
+      </div>
+
+      <div id="verifyCodeCard" class="card hidden">
+        <h2>Verify Your Email</h2>
+        <p class="muted">A verification code has been sent to your email. Please enter it below to complete your
+          registration.</p>
+        <form id="verifyCodeForm" class="grid">
+          <div><label>Verification Code</label><input id="verifyCodeInput" required /></div>
+          <button type="submit">Verify Account</button>
+        </form>
+      </div>
+
+      <div id="loginCard" class="card hidden">
+        <h2>Login</h2>
+        <form id="loginForm" class="grid">
+          <div><label>Username</label><input id="loginUsername" required /></div>
+          <div><label>Email</label><input id="loginEmail" required /></div>
+          <div><label>Password</label><input id="loginPassword" type="password" required /></div>
+          <button type="submit">Sign in</button>
+        </form>
+        <p>Don't have an account?</p>
+        <button type="button" id="showRegisterBtn">Register</button>
+      </div>
+    </section>
+
+    <section id="dashboardScreen" class="screen">
+      <div class="card">
+        <div class="bar">
+          <h2>Dashboard</h2>
+          <div class="row">
+            <span id="trialInfo" class="muted"></span>
+            <button id="subscribeBtn" class="active">Subscribe ($30 / 30 days)</button>
+          </div>
+        </div>
+        <div id="paypal-button-container" class="hidden"></div>
+        <p class="muted">Use the tabs above to create tasks (Client) or view tasks (Freelancer).</p>
+      </div>
+    </section>
+
+    <section id="clientScreen" class="screen">
+      <div class="card">
+        <h2>Create a Task</h2>
+        <form id="createTaskForm" class="grid">
+          <div class="grid cols-2">
+            <div><label>Title</label><input id="taskTitle" required /></div>
+            <div><label>Budget (USD)</label><input id="taskBudget" type="number" min="0" step="1" required /></div>
+          </div>
+          <div><label>Description</label><textarea id="taskDesc" required></textarea></div>
+          <div class="grid cols-2">
+            <div><label>Deadline</label><input id="taskDeadline" type="date" required /></div>
+            <div><label>Task Link</label><input id="taskLink" type="url" placeholder="https://..." /></div>
+          </div>
+          <div class="grid cols-2">
+            <div><label>Submission Link</label><input id="submissionLink" placeholder="gmail, teams acc/" required />
+            </div>
+            <div><label>Payment Link</label><input id="paymentLink" placeholder="eg.paypal.me, stripe..." required />
+            </div>
+          </div>
+          <div class="row">
+            <button type="submit" id="postTaskBtn">Post Task</button>
+            <button type="button" class="secondary" id="clearTasksBtn">Clear All Tasks</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <section id="freelancerScreen" class="screen">
+      <div class="list">
+        <div class="bar">
+          <h2>Available Tasks</h2>
+          <button type="button" class="secondary" id="refreshTasksBtn">Refresh Tasks</button>
+        </div>
+
+        <!-- Container where tasks will be rendered dynamically -->
+        <div id="tasksContainer" class="task-list card">
+          <!-- Tasks from the backend will appear here -->
+        </div>
+
+
+
+
+
+        <!-- External scripts should remain here -->
+        <script
+          src="https://www.paypal.com/sdk/js?client-id=AemPV9RC7JRSZbDw3scGJR4f3JBOzLWj7v91am-HW6QS5FC9kNnU2eNPt1QtHa_lh5au6BWx5NCBiH_1&vault=true&intent=subscription"
+          data-sdk-integration-source="button-factory"></script>
+        <script id="paypal-button-container-P-1S098747NW7142306NCYJPSI"></script>
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    </section>
+    <!-- Move all inline scripts to just before </body> -->
+    <script>
+      paypal.Buttons({
+        style: {
+          shape: 'rect',
+          color: 'gold',
+          layout: 'vertical',
+          label: 'subscribe'
+        },
+        createSubscription: function (data, actions) {
+          return actions.subscription.create({
+            /* Creates the subscription */
+            plan_id: 'P-1S098747NW7142306NCYJPSI'
+          });
+        },
+        onApprove: function (data, actions) {
+          alert(data.subscriptionID); // You can add optional success message for the subscriber here
+        }
+      }).render('#paypal-button-container-P-1S098747NW7142306NCYJPSI'); // Renders the PayPal button
+
+
+
+      // --- API CONFIG ---
+      const API_BASE_URL = "https://assignly-backend-1.onrender.com";
+      const API = axios.create({
+        baseURL: API_BASE_URL,
+        withCredentials: true,
+        headers: { "Content-Type": "application/json" }
+      });
+      let currentUser = null;
+      const MAX_TRIALS = 7;
+
+      // --- HELPERS ---
+      function show(id) {
+        document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+        const el = document.getElementById(id);
+        if (el) el.classList.add("active");
+      }
+
+      function showAuthedUI(showIt) {
+        document.getElementById("topNav").classList.toggle("hidden", !showIt);
+      }
+
+      function escapeHTML(str) {
+        if (!str) return "";
+        return str.replace(/[&<>"']/g, function (match) {
+          const escape = {
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#39;"
+          };
+          return escape[match];
+        });
+      }
+
+      function handleAuthSuccess(userData) {
+        currentUser = userData;
+        if (!currentUser.token) {
+          alert("Authentication succeeded but no token received.");
+          return;
+        }
+        // Initialize trialsUsed if it doesn't exist
+        if (typeof currentUser.trialsUsed === 'undefined') {
+          currentUser.trialsUsed = 0;
+        }
+
+        try {
+          localStorage.setItem("assignlyUser", JSON.stringify(currentUser));
+        } catch (e) { }
+        document.getElementById("userBadge").innerText = currentUser.fullName || currentUser.username || "";
+        showAuthedUI(true);
+        show("dashboardScreen");
+        updateSubscriptionUI();
+      }
+
+      // --- API CALLS (AXIOS) ---
+      async function registerUser(data) {
+        try {
+          const res = await API.post("/api/auth/register", data);
+          return res.data;
+        } catch (err) {
+          return {
+            error: err.response?.data?.message || err.message || "user created. Check your email for the verification code."
+          };
+        }
+      }
+
+      async function loginUser(data) {
+        try {
+          const res = await API.post("/api/auth/login", data);
+          return res.data;
+        } catch (err) {
+          return {
+            error: err.response?.data?.message || err.message || "An unexpected error occurred."
+          };
+        }
+      }
+
+      // NEW: API call for verifying the email code
+      async function verifyCodeApi(data) {
+        try {
+          const res = await API.post("/api/auth/verifycode", data);
+          return res.data;
+        } catch (err) {
+          return {
+            error: err.response?.data?.message || err.message || "Verification failed."
+          };
+        }
+      }
+
+      async function createTaskApi(t) {
+        try {
+          const res = await API.post("/api/tasks", t, {
+            headers: {
+              Authorization: "Bearer " + (currentUser?.token || "")
+            }
+          });
+          return res.data;
+        } catch (err) {
+          return {
+            error: err.response?.data?.message || err.message
+          };
+        }
+      }
+
+      // --- Fetch tasks from backend ---
+      async function fetchTasksApi() {
+        try {
+          const res = await API.get("/api/tasks", {
+            headers: {
+              Authorization: "Bearer " + (currentUser?.token || "")
+            }
+          });
+
+          // ✅ Always return the full object { tasks: [...] }
+          return res.data || { tasks: [] };
+        } catch (err) {
+          console.error("❌ Error fetching tasks:", err);
+          return { tasks: [] }; // return empty object structure on error
+        }
+      }
+
+
+      async function checkSubscription() {
+        if (!currentUser?.token) return {
+          active: false,
+          trialsUsed: 0
+        };
+        try {
+          const res = await API.get("/api/subscriptions", {
+            headers: {
+              Authorization: "Bearer " + (currentUser?.token || "")
+            }
+          });
+          return {
+            ...res.data,
+            trialsUsed: currentUser.trialsUsed
+          };
+        } catch {
+          return {
+            active: false,
+            trialsUsed: currentUser.trialsUsed
+          };
+        }
+      }
+
+      // --- UI wiring ---
+      window.addEventListener("load", () => {
+        // elements
+        const registerForm = document.getElementById("registerForm");
+        const loginForm = document.getElementById("loginForm");
+        const createTaskForm = document.getElementById("createTaskForm");
+        const clearTasksBtn = document.getElementById("clearTasksBtn");
+        const refreshTasksBtn = document.getElementById("refreshTasksBtn");
+        const tasksContainer = document.getElementById("tasksContainer");
+        const logoutBtn = document.getElementById("logoutBtn");
+        const tabDashboardBtn = document.getElementById("tabDashboardBtn");
+        const tabClientBtn = document.getElementById("tabClientBtn");
+        const tabFreelancerBtn = document.getElementById("tabFreelancerBtn");
+        const userBadge = document.getElementById("userBadge");
+        const subscribeBtn = document.getElementById("subscribeBtn");
+        const paypalContainer = document.getElementById("paypal-button-container");
+        const trialInfo = document.getElementById("trialInfo");
+        const loginCard = document.getElementById("loginCard");
+        const registerCard = document.getElementById("registerCard");
+        const showLoginBtn = document.getElementById("showLoginBtn");
+        const showRegisterBtn = document.getElementById("showRegisterBtn");
+        const verifyCodeCard = document.getElementById("verifyCodeCard");
+        const verifyCodeForm = document.getElementById("verifyCodeForm");
+
+        async function updateSubscriptionUI() {
+          const sub = await checkSubscription();
+          if (sub.active) {
+            trialInfo.innerText = `Subscription active until ${new Date(sub.expiresAt).toLocaleDateString()}`;
+            subscribeBtn.classList.add("hidden");
+            paypalContainer.classList.add("hidden");
+          } else {
+            trialInfo.innerText = `Trials used: ${sub.trialsUsed}/${MAX_TRIALS}`;
+            if (sub.trialsUsed >= MAX_TRIALS) {
+              trialInfo.innerText = "Trial expired - please subscribe";
+              subscribeBtn.classList.remove("hidden");
+            } else {
+              subscribeBtn.classList.remove("hidden");
+            }
+          }
+        }
+
+        // Replaces the old subscribeBtn listener
+        subscribeBtn.addEventListener("click", () => {
+          subscribeBtn.classList.add("hidden");
+          paypalContainer.classList.remove("hidden");
+          paypal.Buttons({
+            createSubscription: (data, actions) => {
+              return actions.subscription.create({
+                plan_id: 'P-1S098747NW7142306NCYJPSI', // Replace with your Plan ID
+                custom_id: currentUser.username || currentUser.email || "",
+              });
+            },
+            onApprove: (data, actions) => {
+              alert('You have successfully subscribed! You can now view tasks.');
+              updateSubscriptionUI();
+            },
+            onError: (err) => {
+              console.error(err);
+              alert("Payment error, try again.");
+              subscribeBtn.classList.remove("hidden");
+              paypalContainer.classList.add("hidden");
+            }
+          }).render("#paypal-button-container");
+        });
+
+        // Restore user from localStorage
+        try {
+          const saved = localStorage.getItem("assignlyUser");
+          if (saved) {
+            const savedUser = JSON.parse(saved);
+            if (savedUser?.token) {
+              handleAuthSuccess(savedUser);
+            }
+          }
+        } catch (e) { }
+
+        // --- Event Listeners for Authentication ---
+        showLoginBtn.addEventListener("click", () => {
+          registerCard.classList.add("hidden");
+          loginCard.classList.remove("hidden");
+        });
+        showRegisterBtn.addEventListener("click", () => {
+          loginCard.classList.add("hidden");
+          registerCard.classList.remove("hidden");
+        });
+
+        // Registration (Step 1)
+        registerForm.addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const data = {
+            fullName: document.getElementById("regFullName").value.trim(),
+            email: document.getElementById("regEmail").value.trim(),
+            username: document.getElementById("regUsername").value.trim(),
+            password: document.getElementById("regPassword").value
+          };
+
+          const res = await registerUser(data);
+          if (res.error) {
+            alert(res.error);
+          } else {
+            // Store the email in localStorage to persist it for the next step
+            localStorage.setItem("email", data.email);
+            alert(res.message);
+            registerCard.classList.add("hidden");
+            verifyCodeCard.classList.remove("hidden");
+          }
+        });
+
+        // Verification (Step 2)
+        verifyCodeForm.addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const verificationCode = document.getElementById("verifyCodeInput").value.trim();
+          const email = localStorage.getItem("email");
+
+          if (!email) {
+            alert("Email not found. Please register again.");
+            return;
+          }
+
+          const data = {
+            email: email,
+            verificationCode: verificationCode
+          };
+
+          const res = await verifyCodeApi(data);
+          if (res.error) {
+            alert(res.error);
+          } else {
+            alert(res.message);
+            localStorage.removeItem("email");
+            verifyCodeCard.classList.add("hidden");
+            loginCard.classList.remove("hidden");
+            document.getElementById("loginEmail").value = email;
+          }
+        });
+
+        // Login
+        loginForm.addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const data = {
+            username: document.getElementById("loginUsername").value.trim(),
+            email: document.getElementById("loginEmail").value.trim(),
+            password: document.getElementById("loginPassword").value
+          };
+          const res = await loginUser(data);
+          if (res.error) {
+            alert(res.error || "Login failed");
+            return;
+          }
+          handleAuthSuccess(res);
+        });
+
+        // Logout
+        logoutBtn.addEventListener("click", () => {
+          currentUser = null;
+          try {
+            localStorage.removeItem("assignlyUser");
+          } catch (e) { }
+          userBadge.innerText = "";
+          showAuthedUI(false);
+          show("authScreen");
+          registerCard.classList.remove("hidden");
+          loginCard.classList.add("hidden");
+        });
+
+
+
+
+        // --- Tab switching ---
+        tabDashboardBtn.addEventListener("click", () => show("dashboardScreen"));
+        tabClientBtn.addEventListener("click", () => show("clientScreen"));
+        tabFreelancerBtn.addEventListener("click", async () => {
+          try {
+            // show freelancer screen first
+            show("freelancerScreen");
+
+            // then fetch & display tasks
+            const responseData = await fetchTasksApi();
+            displayTasks(responseData);
+          } catch (err) {
+            console.error("❌ Failed to load tasks:", err);
+            alert("Could not load tasks. Please try again.");
+          }
+        });
+
+
+
+        // --- Client-side Task Management ---
+        createTaskForm.addEventListener("submit", async (e) => {
+          e.preventDefault();
+          const task = {
+            title: document.getElementById("taskTitle").value.trim(),
+            budget: parseFloat(document.getElementById("taskBudget").value),
+            description: document.getElementById("taskDesc").value.trim(),
+            deadline: document.getElementById("taskDeadline").value.trim(),
+            taskLink: document.getElementById("taskLink").value.trim(),
+            submissionLink: document.getElementById("submissionLink").value.trim(),
+            paymentLink: document.getElementById("paymentLink").value.trim()
+          };
+          const res = await createTaskApi(task);
+          if (res.error) {
+            alert(res.error);
+          } else {
+            alert("Task posted successfully!");
+            createTaskForm.reset();
+            show("dashboardScreen");
+
+          }
+        });
+
+        refreshTasksBtn.addEventListener("click", async () => {
+          const tasks = await fetchTasksApi();
+          displayTasks(tasks);
+        });
+
+        // --- Display tasks in the UI ---
+        function displayTasks(responseData) {
+          tasksContainer.innerHTML = "";
+
+          // Always read from responseData.tasks
+          const tasks = responseData?.tasks || [];
+
+          if (tasks.length === 0) {
+            tasksContainer.innerHTML = `<p class="active">Your free trials are over. Please subscribe to continue! </p>`;
+            return;
+          }
+
+          tasks.forEach(task => {
+            const card = document.createElement("div");
+            card.className = "card";
+            card.innerHTML = `
+      <div class="task-row">
+        <h3>${escapeHTML(task.title)}</h3>
+        <div class="task-meta muted">
+          <span>Posted by: ${escapeHTML(task.postedBy || "Unknown")}</span>
+          <span>Deadline: ${escapeHTML(new Date(task.deadline).toLocaleDateString())}</span>
+          <span>Budget: $${escapeHTML(task.budget.toLocaleString())}</span>
+        </div>
+        <p>${escapeHTML(task.description)}</p>
+        <div class="row">
+          <a href="${escapeHTML(task.taskLink)}" target="_input" class="active">View Link</a>
+          <a href="${escapeHTML(task.submissionLink)}" target="_input" class="active">Submission Link</a>
+          <a href="${escapeHTML(task.paymentLink)}" target="_input" class="active">Payment Link</a>
+        </div>
+      </div>
+    `;
+            tasksContainer.appendChild(card);
+          });
+        }
+
+      });
+    </script>
+  </div>
+</body>
+
+</html>
