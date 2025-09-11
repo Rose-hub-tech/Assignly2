@@ -276,413 +276,539 @@
       </p>
     </footer>
 
-
-    <!-- External scripts should remain here -->
-    <script
-      src="https://www.paypal.com/sdk/js?client-id=AemPV9RC7JRSZbDw3scGJR4f3JBOzLWj7v91am-HW6QS5FC9kNnU2eNPt1QtHa_lh5au6BWx5NCBiH_1&vault=true&intent=subscription"
-      data-sdk-integration-source="button-factory"></script>
-    <script id="paypal-button-container-P-1S098747NW7142306NCYJPSI"></script>
-    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    </section>
-    <!-- Move all inline scripts to just before </body> -->
-    <script>
-      paypal.Buttons({
-        style: {
-          shape: 'rect',
-          color: 'gold',
-          layout: 'vertical',
-          label: 'subscribe'
-        },
-        createSubscription: function (data, actions) {
-          return actions.subscription.create({
-            /* Creates the subscription */
-            plan_id: 'P-1S098747NW7142306NCYJPSI'
-          });
-        },
-        onApprove: function (data, actions) {
-          alert(data.subscriptionID); // You can add optional success message for the subscriber here
-        }
-      }).render('#paypal-button-container-P-1S098747NW7142306NCYJPSI'); // Renders the PayPal button
-
-
-
-      // --- API CONFIG ---
-      const API_BASE_URL = "https://assignly-backend-1.onrender.com";
-      const API = axios.create({
-        baseURL: API_BASE_URL,
-        withCredentials: true,
-        headers: { "Content-Type": "application/json" }
-      });
-      let currentUser = null;
-      const MAX_TRIALS = 7;
-
-      // --- HELPERS ---
-      function show(id) {
-        document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
-        const el = document.getElementById(id);
-        if (el) el.classList.add("active");
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terms of Service - Assignly</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        margin: 0;
+        padding: 0;
+        background: #f9f9f9;
+        color: #333;
       }
 
-      function showAuthedUI(showIt) {
-        document.getElementById("topNav").classList.toggle("hidden", !showIt);
+      .container {
+        width: 80%;
+        margin: auto;
+        padding: 20px;
+        background: #fff;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        margin-top: 30px;
+        margin-bottom: 30px;
+        border-radius: 8px;
       }
 
-      function escapeHTML(str) {
-        if (!str) return "";
-        return str.replace(/[&<>"']/g, function (match) {
-          const escape = {
-            "&": "&amp;",
-            "<": "&lt;",
-            ">": "&gt;",
-            '"': "&quot;",
-            "'": "&#39;"
-          };
-          return escape[match];
-        });
+      h1,
+      h2 {
+        color: #222;
       }
 
-      function handleAuthSuccess(userData) {
-        currentUser = userData;
-        if (!currentUser.token) {
-          alert("Authentication succeeded but no token received.");
-          return;
-        }
-        // Initialize trialsUsed if it doesn't exist
-        if (typeof currentUser.trialsUsed === 'undefined') {
-          currentUser.trialsUsed = 0;
-        }
-
-        try {
-          localStorage.setItem("assignlyUser", JSON.stringify(currentUser));
-        } catch (e) { }
-        document.getElementById("userBadge").innerText = currentUser.fullName || currentUser.username || "";
-        showAuthedUI(true);
-        show("dashboardScreen");
-        updateSubscriptionUI();
+      a {
+        color: #0073e6;
+        text-decoration: none;
       }
 
-      // --- API CALLS (AXIOS) ---
-      async function registerUser(data) {
-        try {
-          const res = await API.post("/api/auth/register", data);
-          return res.data;
-        } catch (err) {
-          return {
-            error: err.response?.data?.message || err.message || "user created. Check your email for the verification code."
-          };
-        }
+      a:hover {
+        text-decoration: underline;
       }
+    </style>
+    </head>
 
-      async function loginUser(data) {
-        try {
-          const res = await API.post("/api/auth/login", data);
-          return res.data;
-        } catch (err) {
-          return {
-            error: err.response?.data?.message || err.message || "An unexpected error occurred."
-          };
-        }
-      }
+    <body>
+      <div class="container">
+        <h1>Terms of Service</h1>
+        <p><strong>Last Updated:</strong> September 11, 2025</p>
+        <p>Welcome to <strong>Assignly</strong> (“we,” “our,” or “us”). These Terms of Service (“Terms”) govern your
+          access and use of our platform, available at <a href="https://rose-hub-tech.github.io/Assignly2/"
+            target="_blank">https://rose-hub-tech.github.io/Assignly2/</a>. By creating an account, posting a task, or
+          accepting work, you agree to comply with these Terms.</p>
 
-      // NEW: API call for verifying the email code
-      async function verifyCodeApi(data) {
-        try {
-          const res = await API.post("/api/auth/verifycode", data);
-          return res.data;
-        } catch (err) {
-          return {
-            error: err.response?.data?.message || err.message || "Verification failed."
-          };
-        }
-      }
+        <h2>1. Eligibility</h2>
+        <p>You must be at least 18 years old to use Assignly. By registering, you confirm that the information you
+          provide is accurate and complete. We reserve the right to suspend accounts that violate these Terms.</p>
 
-      async function createTaskApi(t) {
-        try {
-          const res = await API.post("/api/tasks", t, {
-            headers: {
-              Authorization: "Bearer " + (currentUser?.token || "")
-            }
-          });
-          return res.data;
-        } catch (err) {
-          return {
-            error: err.response?.data?.message || err.message
-          };
-        }
-      }
+        <h2>2. Account Registration</h2>
+        <p>Clients and Freelancers must register with valid details (name, email, username, and password). You are
+          responsible for keeping your login details secure. You may not create multiple accounts to bypass trial limits
+          or subscriptions.</p>
 
-      // --- Fetch tasks from backend ---
-      async function fetchTasksApi() {
-        try {
-          const res = await API.get("/api/tasks", {
-            headers: {
-              Authorization: "Bearer " + (currentUser?.token || "")
-            }
-          });
+        <h2>3. Services</h2>
+        <p><strong>Clients</strong> may create and publish tasks, specifying requirements, budget, deadlines, and
+          submission methods.<br>
+          <strong>Freelancers</strong> may view, apply for, and complete tasks posted by Clients.<br>
+          Assignly facilitates task postings and communication but is <strong>not a payment processor</strong>.
+        </p>
 
-          // ✅ Always return the full object { tasks: [...] }
-          return res.data || { tasks: [] };
-        } catch (err) {
-          console.error("❌ Error fetching tasks:", err);
-          return { tasks: [] }; // return empty object structure on error
-        }
-      }
+        <h2>4. Payments</h2>
+        <p>Clients must provide a valid payment link (e.g., PayPal, Stripe, or bank transfer). Freelancers agree to
+          receive payments directly from Clients through these links. Assignly does not hold or transfer funds and is
+          not responsible for payment disputes.</p>
+
+        <h2>5. Free Trial & Subscriptions</h2>
+        <p>New users may access Assignly with a 7-task free trial. After the trial, users must subscribe to continue
+          accessing the platform. Subscription fees are non-refundable, except where required by law.</p>
+
+        <h2>6. User Responsibilities</h2>
+        <p><strong>For Clients:</strong></p>
+        <ul>
+          <li>Provide clear, truthful, and lawful task details.</li>
+          <li>Share a valid payment link for each task.</li>
+          <li>Provide a working submission link for Freelancers to deliver completed work.</li>
+          <li>Be available for payment confirmation and clarification via Google Meet when requested by the Freelancer.
+          </li>
+          <li>Ensure payments are made promptly once work is submitted and approved.</li>
+        </ul>
+        <p><strong>For Freelancers:</strong></p>
+        <ul>
+          <li>Complete tasks to the best of your ability and within deadlines.</li>
+          <li>Deliver original work that does not infringe copyrights.</li>
+          <li>Submit completed work only through the submission link provided by the Client.</li>
+          <li>If payment is delayed, you may follow up with the Client via the agreed Google Meet session.</li>
+          <li>Respect Clients’ instructions and maintain professional communication.</li>
+        </ul>
+
+        <h2>7. Prohibited Use</h2>
+        <p>You may not use Assignly to:</p>
+        <ul>
+          <li>Engage in fraud, spam, or illegal activity.</li>
+          <li>Post or request adult, harmful, or offensive content.</li>
+          <li>Circumvent payment, subscription, or platform rules.</li>
+        </ul>
+
+        <h2>8. Disclaimers</h2>
+        <p>Assignly is a <strong>task-posting platform only</strong>. We are not responsible for:</p>
+        <ul>
+          <li>The quality, accuracy, or completion of tasks.</li>
+          <li>Payment delays, non-payment, or disputes between Clients and Freelancers.</li>
+          <li>Service interruptions beyond our reasonable control.</li>
+        </ul>
+
+        <h2>9. Termination</h2>
+        <p>We may suspend or delete accounts that violate these Terms, misuse the platform, or engage in fraud,
+          harassment, or unlawful activity.</p>
+
+        <h2>10. Limitation of Liability</h2>
+        <p>Assignly shall not be liable for lost profits, lost data, indirect damages, disputes, or failed payments
+          between Clients and Freelancers.</p>
+
+        <h2>11. Changes to Terms</h2>
+        <p>We may update these Terms at any time. Continued use of Assignly after changes means you accept the updated
+          Terms.</p>
+
+        <h2>12. Contact Us</h2>
+        <p>If you have any questions about these Terms, contact us at: <a
+            href="mailto:f97935875@gmail.com">f97935875@gmail.com</a></p>
+      </div>
 
 
-      async function checkSubscription() {
-        if (!currentUser?.token) return {
-          active: false,
-          trialsUsed: 0
-        };
-        try {
-          const res = await API.get("/api/subscriptions", {
-            headers: {
-              Authorization: "Bearer " + (currentUser?.token || "")
-            }
-          });
-          return {
-            ...res.data,
-            trialsUsed: currentUser.trialsUsed
-          };
-        } catch {
-          return {
-            active: false,
-            trialsUsed: currentUser.trialsUsed
-          };
-        }
-      }
-
-      // --- UI wiring ---
-      window.addEventListener("load", () => {
-        // elements
-        const registerForm = document.getElementById("registerForm");
-        const loginForm = document.getElementById("loginForm");
-        const createTaskForm = document.getElementById("createTaskForm");
-        const clearTasksBtn = document.getElementById("clearTasksBtn");
-        const refreshTasksBtn = document.getElementById("refreshTasksBtn");
-        const tasksContainer = document.getElementById("tasksContainer");
-        const logoutBtn = document.getElementById("logoutBtn");
-        const tabDashboardBtn = document.getElementById("tabDashboardBtn");
-        const tabClientBtn = document.getElementById("tabClientBtn");
-        const tabFreelancerBtn = document.getElementById("tabFreelancerBtn");
-        const userBadge = document.getElementById("userBadge");
-        const subscribeBtn = document.getElementById("subscribeBtn");
-        const paypalContainer = document.getElementById("paypal-button-container");
-        const trialInfo = document.getElementById("trialInfo");
-        const loginCard = document.getElementById("loginCard");
-        const registerCard = document.getElementById("registerCard");
-        const showLoginBtn = document.getElementById("showLoginBtn");
-        const showRegisterBtn = document.getElementById("showRegisterBtn");
-        const verifyCodeCard = document.getElementById("verifyCodeCard");
-        const verifyCodeForm = document.getElementById("verifyCodeForm");
-
-        async function updateSubscriptionUI() {
-          const sub = await checkSubscription();
-          if (sub.active) {
-            trialInfo.innerText = `Subscription active until ${new Date(sub.expiresAt).toLocaleDateString()}`;
-            subscribeBtn.classList.add("hidden");
-            paypalContainer.classList.add("hidden");
-          } else {
-            trialInfo.innerText = `Trials used: ${sub.trialsUsed}/${MAX_TRIALS}`;
-            if (sub.trialsUsed >= MAX_TRIALS) {
-              trialInfo.innerText = "Trial expired - please subscribe";
-              subscribeBtn.classList.remove("hidden");
-            } else {
-              subscribeBtn.classList.remove("hidden");
-            }
+      <!-- External scripts should remain here -->
+      <script
+        src="https://www.paypal.com/sdk/js?client-id=AemPV9RC7JRSZbDw3scGJR4f3JBOzLWj7v91am-HW6QS5FC9kNnU2eNPt1QtHa_lh5au6BWx5NCBiH_1&vault=true&intent=subscription"
+        data-sdk-integration-source="button-factory"></script>
+      <script id="paypal-button-container-P-1S098747NW7142306NCYJPSI"></script>
+      <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+      </section>
+      <!-- Move all inline scripts to just before </body> -->
+      <script>
+        paypal.Buttons({
+          style: {
+            shape: 'rect',
+            color: 'gold',
+            layout: 'vertical',
+            label: 'subscribe'
+          },
+          createSubscription: function (data, actions) {
+            return actions.subscription.create({
+              /* Creates the subscription */
+              plan_id: 'P-1S098747NW7142306NCYJPSI'
+            });
+          },
+          onApprove: function (data, actions) {
+            alert(data.subscriptionID); // You can add optional success message for the subscriber here
           }
+        }).render('#paypal-button-container-P-1S098747NW7142306NCYJPSI'); // Renders the PayPal button
+
+
+
+        // --- API CONFIG ---
+        const API_BASE_URL = "https://assignly-backend-1.onrender.com";
+        const API = axios.create({
+          baseURL: API_BASE_URL,
+          withCredentials: true,
+          headers: { "Content-Type": "application/json" }
+        });
+        let currentUser = null;
+        const MAX_TRIALS = 7;
+
+        // --- HELPERS ---
+        function show(id) {
+          document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+          const el = document.getElementById(id);
+          if (el) el.classList.add("active");
         }
 
-        // Replaces the old subscribeBtn listener
-        subscribeBtn.addEventListener("click", () => {
-          subscribeBtn.classList.add("hidden");
-          paypalContainer.classList.remove("hidden");
-          paypal.Buttons({
-            createSubscription: (data, actions) => {
-              return actions.subscription.create({
-                plan_id: 'P-1S098747NW7142306NCYJPSI', // Replace with your Plan ID
-                custom_id: currentUser.username || currentUser.email || "",
-              });
-            },
-            onApprove: (data, actions) => {
-              alert('You have successfully subscribed! You can now view tasks.');
-              updateSubscriptionUI();
-            },
-            onError: (err) => {
-              console.error(err);
-              alert("Payment error, try again.");
-              subscribeBtn.classList.remove("hidden");
-              paypalContainer.classList.add("hidden");
-            }
-          }).render("#paypal-button-container");
-        });
+        function showAuthedUI(showIt) {
+          document.getElementById("topNav").classList.toggle("hidden", !showIt);
+        }
 
-        // Restore user from localStorage
-        try {
-          const saved = localStorage.getItem("assignlyUser");
-          if (saved) {
-            const savedUser = JSON.parse(saved);
-            if (savedUser?.token) {
-              handleAuthSuccess(savedUser);
-            }
-          }
-        } catch (e) { }
+        function escapeHTML(str) {
+          if (!str) return "";
+          return str.replace(/[&<>"']/g, function (match) {
+            const escape = {
+              "&": "&amp;",
+              "<": "&lt;",
+              ">": "&gt;",
+              '"': "&quot;",
+              "'": "&#39;"
+            };
+            return escape[match];
+          });
+        }
 
-        // --- Event Listeners for Authentication ---
-        showLoginBtn.addEventListener("click", () => {
-          registerCard.classList.add("hidden");
-          loginCard.classList.remove("hidden");
-        });
-        showRegisterBtn.addEventListener("click", () => {
-          loginCard.classList.add("hidden");
-          registerCard.classList.remove("hidden");
-        });
-
-        // Registration (Step 1)
-        registerForm.addEventListener("submit", async (e) => {
-          e.preventDefault();
-          const data = {
-            fullName: document.getElementById("regFullName").value.trim(),
-            email: document.getElementById("regEmail").value.trim(),
-            username: document.getElementById("regUsername").value.trim(),
-            password: document.getElementById("regPassword").value
-          };
-
-          const res = await registerUser(data);
-          if (res.error) {
-            alert(res.error);
-          } else {
-            // Store the email in localStorage to persist it for the next step
-            localStorage.setItem("email", data.email);
-            alert(res.message);
-            registerCard.classList.add("hidden");
-            verifyCodeCard.classList.remove("hidden");
-          }
-        });
-
-        // Verification (Step 2)
-        verifyCodeForm.addEventListener("submit", async (e) => {
-          e.preventDefault();
-          const verificationCode = document.getElementById("verifyCodeInput").value.trim();
-          const email = localStorage.getItem("email");
-
-          if (!email) {
-            alert("Email not found. Please register again.");
+        function handleAuthSuccess(userData) {
+          currentUser = userData;
+          if (!currentUser.token) {
+            alert("Authentication succeeded but no token received.");
             return;
           }
-
-          const data = {
-            email: email,
-            verificationCode: verificationCode
-          };
-
-          const res = await verifyCodeApi(data);
-          if (res.error) {
-            alert(res.error);
-          } else {
-            alert(res.message);
-            localStorage.removeItem("email");
-            verifyCodeCard.classList.add("hidden");
-            loginCard.classList.remove("hidden");
-            document.getElementById("loginEmail").value = email;
+          // Initialize trialsUsed if it doesn't exist
+          if (typeof currentUser.trialsUsed === 'undefined') {
+            currentUser.trialsUsed = 0;
           }
-        });
 
-        // Login
-        loginForm.addEventListener("submit", async (e) => {
-          e.preventDefault();
-          const data = {
-            username: document.getElementById("loginUsername").value.trim(),
-            email: document.getElementById("loginEmail").value.trim(),
-            password: document.getElementById("loginPassword").value
-          };
-          const res = await loginUser(data);
-          if (res.error) {
-            alert(res.error || "Login failed");
-            return;
-          }
-          handleAuthSuccess(res);
-        });
-
-        // Logout
-        logoutBtn.addEventListener("click", () => {
-          currentUser = null;
           try {
-            localStorage.removeItem("assignlyUser");
+            localStorage.setItem("assignlyUser", JSON.stringify(currentUser));
           } catch (e) { }
-          userBadge.innerText = "";
-          showAuthedUI(false);
-          show("authScreen");
-          registerCard.classList.remove("hidden");
-          loginCard.classList.add("hidden");
-        });
+          document.getElementById("userBadge").innerText = currentUser.fullName || currentUser.username || "";
+          showAuthedUI(true);
+          show("dashboardScreen");
+          updateSubscriptionUI();
+        }
 
-
-
-
-        // --- Tab switching ---
-        tabDashboardBtn.addEventListener("click", () => show("dashboardScreen"));
-        tabClientBtn.addEventListener("click", () => show("clientScreen"));
-        tabFreelancerBtn.addEventListener("click", async () => {
+        // --- API CALLS (AXIOS) ---
+        async function registerUser(data) {
           try {
-            // show freelancer screen first
-            show("freelancerScreen");
-
-            // then fetch & display tasks
-            const responseData = await fetchTasksApi();
-            displayTasks(responseData);
+            const res = await API.post("/api/auth/register", data);
+            return res.data;
           } catch (err) {
-            console.error("❌ Failed to load tasks:", err);
-            alert("Could not load tasks. Please try again.");
+            return {
+              error: err.response?.data?.message || err.message || "By clicking OK, you agree to terms of services."
+            };
           }
-        });
+        }
+
+        async function loginUser(data) {
+          try {
+            const res = await API.post("/api/auth/login", data);
+            return res.data;
+          } catch (err) {
+            return {
+              error: err.response?.data?.message || err.message || "An unexpected error occurred."
+            };
+          }
+        }
+
+        // NEW: API call for verifying the email code
+        async function verifyCodeApi(data) {
+          try {
+            const res = await API.post("/api/auth/verifycode", data);
+            return res.data;
+          } catch (err) {
+            return {
+              error: err.response?.data?.message || err.message || "Verification failed."
+            };
+          }
+        }
+
+        async function createTaskApi(t) {
+          try {
+            const res = await API.post("/api/tasks", t, {
+              headers: {
+                Authorization: "Bearer " + (currentUser?.token || "")
+              }
+            });
+            return res.data;
+          } catch (err) {
+            return {
+              error: err.response?.data?.message || err.message
+            };
+          }
+        }
+
+        // --- Fetch tasks from backend ---
+        async function fetchTasksApi() {
+          try {
+            const res = await API.get("/api/tasks", {
+              headers: {
+                Authorization: "Bearer " + (currentUser?.token || "")
+              }
+            });
+
+            // ✅ Always return the full object { tasks: [...] }
+            return res.data || { tasks: [] };
+          } catch (err) {
+            console.error("❌ Error fetching tasks:", err);
+            return { tasks: [] }; // return empty object structure on error
+          }
+        }
 
 
-
-        // --- Client-side Task Management ---
-        createTaskForm.addEventListener("submit", async (e) => {
-          e.preventDefault();
-          const task = {
-            title: document.getElementById("taskTitle").value.trim(),
-            budget: parseFloat(document.getElementById("taskBudget").value),
-            description: document.getElementById("taskDesc").value.trim(),
-            deadline: document.getElementById("taskDeadline").value.trim(),
-            taskLink: document.getElementById("taskLink").value.trim(),
-            submissionLink: document.getElementById("submissionLink").value.trim(),
-            paymentLink: document.getElementById("paymentLink").value.trim()
+        async function checkSubscription() {
+          if (!currentUser?.token) return {
+            active: false,
+            trialsUsed: 0
           };
-          const res = await createTaskApi(task);
-          if (res.error) {
-            alert(res.error);
-          } else {
-            alert("Task posted successfully!");
-            createTaskForm.reset();
-            show("dashboardScreen");
-
+          try {
+            const res = await API.get("/api/subscriptions", {
+              headers: {
+                Authorization: "Bearer " + (currentUser?.token || "")
+              }
+            });
+            return {
+              ...res.data,
+              trialsUsed: currentUser.trialsUsed
+            };
+          } catch {
+            return {
+              active: false,
+              trialsUsed: currentUser.trialsUsed
+            };
           }
-        });
+        }
 
-        refreshTasksBtn.addEventListener("click", async () => {
-          const tasks = await fetchTasksApi();
-          displayTasks(tasks);
-        });
+        // --- UI wiring ---
+        window.addEventListener("load", () => {
+          // elements
+          const registerForm = document.getElementById("registerForm");
+          const loginForm = document.getElementById("loginForm");
+          const createTaskForm = document.getElementById("createTaskForm");
+          const clearTasksBtn = document.getElementById("clearTasksBtn");
+          const refreshTasksBtn = document.getElementById("refreshTasksBtn");
+          const tasksContainer = document.getElementById("tasksContainer");
+          const logoutBtn = document.getElementById("logoutBtn");
+          const tabDashboardBtn = document.getElementById("tabDashboardBtn");
+          const tabClientBtn = document.getElementById("tabClientBtn");
+          const tabFreelancerBtn = document.getElementById("tabFreelancerBtn");
+          const userBadge = document.getElementById("userBadge");
+          const subscribeBtn = document.getElementById("subscribeBtn");
+          const paypalContainer = document.getElementById("paypal-button-container");
+          const trialInfo = document.getElementById("trialInfo");
+          const loginCard = document.getElementById("loginCard");
+          const registerCard = document.getElementById("registerCard");
+          const showLoginBtn = document.getElementById("showLoginBtn");
+          const showRegisterBtn = document.getElementById("showRegisterBtn");
+          const verifyCodeCard = document.getElementById("verifyCodeCard");
+          const verifyCodeForm = document.getElementById("verifyCodeForm");
 
-        // --- Display tasks in the UI ---
-        function displayTasks(responseData) {
-          tasksContainer.innerHTML = "";
-
-          // Always read from responseData.tasks
-          const tasks = responseData?.tasks || [];
-
-          if (tasks.length === 0) {
-            tasksContainer.innerHTML = `<p class="active">Your free trials are over. Please subscribe to continue! </p>`;
-            return;
+          async function updateSubscriptionUI() {
+            const sub = await checkSubscription();
+            if (sub.active) {
+              trialInfo.innerText = `Subscription active until ${new Date(sub.expiresAt).toLocaleDateString()}`;
+              subscribeBtn.classList.add("hidden");
+              paypalContainer.classList.add("hidden");
+            } else {
+              trialInfo.innerText = `Trials used: ${sub.trialsUsed}/${MAX_TRIALS}`;
+              if (sub.trialsUsed >= MAX_TRIALS) {
+                trialInfo.innerText = "Trial expired - please subscribe";
+                subscribeBtn.classList.remove("hidden");
+              } else {
+                subscribeBtn.classList.remove("hidden");
+              }
+            }
           }
 
-          tasks.forEach(task => {
-            const card = document.createElement("div");
-            card.className = "card";
-            card.innerHTML = `
+          // Replaces the old subscribeBtn listener
+          subscribeBtn.addEventListener("click", () => {
+            subscribeBtn.classList.add("hidden");
+            paypalContainer.classList.remove("hidden");
+            paypal.Buttons({
+              createSubscription: (data, actions) => {
+                return actions.subscription.create({
+                  plan_id: 'P-1S098747NW7142306NCYJPSI', // Replace with your Plan ID
+                  custom_id: currentUser.username || currentUser.email || "",
+                });
+              },
+              onApprove: (data, actions) => {
+                alert('You have successfully subscribed! You can now view tasks.');
+                updateSubscriptionUI();
+              },
+              onError: (err) => {
+                console.error(err);
+                alert("Payment error, try again.");
+                subscribeBtn.classList.remove("hidden");
+                paypalContainer.classList.add("hidden");
+              }
+            }).render("#paypal-button-container");
+          });
+
+          // Restore user from localStorage
+          try {
+            const saved = localStorage.getItem("assignlyUser");
+            if (saved) {
+              const savedUser = JSON.parse(saved);
+              if (savedUser?.token) {
+                handleAuthSuccess(savedUser);
+              }
+            }
+          } catch (e) { }
+
+          // --- Event Listeners for Authentication ---
+          showLoginBtn.addEventListener("click", () => {
+            registerCard.classList.add("hidden");
+            loginCard.classList.remove("hidden");
+          });
+          showRegisterBtn.addEventListener("click", () => {
+            loginCard.classList.add("hidden");
+            registerCard.classList.remove("hidden");
+          });
+
+          // Registration (Step 1)
+          registerForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const data = {
+              fullName: document.getElementById("regFullName").value.trim(),
+              email: document.getElementById("regEmail").value.trim(),
+              username: document.getElementById("regUsername").value.trim(),
+              password: document.getElementById("regPassword").value
+            };
+
+            const res = await registerUser(data);
+            if (res.error) {
+              alert(res.error);
+            } else {
+              // Store the email in localStorage to persist it for the next step
+              localStorage.setItem("email", data.email);
+              alert(res.message);
+              registerCard.classList.add("hidden");
+              verifyCodeCard.classList.remove("hidden");
+            }
+          });
+
+          // Verification (Step 2)
+          verifyCodeForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const verificationCode = document.getElementById("verifyCodeInput").value.trim();
+            const email = localStorage.getItem("email");
+
+            if (!email) {
+              alert("Email not found. Please register again.");
+              return;
+            }
+
+            const data = {
+              email: email,
+              verificationCode: verificationCode
+            };
+
+            const res = await verifyCodeApi(data);
+            if (res.error) {
+              alert(res.error);
+            } else {
+              alert(res.message);
+              localStorage.removeItem("email");
+              verifyCodeCard.classList.add("hidden");
+              loginCard.classList.remove("hidden");
+              document.getElementById("loginEmail").value = email;
+            }
+          });
+
+          // Login
+          loginForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const data = {
+              username: document.getElementById("loginUsername").value.trim(),
+              email: document.getElementById("loginEmail").value.trim(),
+              password: document.getElementById("loginPassword").value
+            };
+            const res = await loginUser(data);
+            if (res.error) {
+              alert(res.error || "Login failed");
+              return;
+            }
+            handleAuthSuccess(res);
+          });
+
+          // Logout
+          logoutBtn.addEventListener("click", () => {
+            currentUser = null;
+            try {
+              localStorage.removeItem("assignlyUser");
+            } catch (e) { }
+            userBadge.innerText = "";
+            showAuthedUI(false);
+            show("authScreen");
+            registerCard.classList.remove("hidden");
+            loginCard.classList.add("hidden");
+          });
+
+
+
+
+          // --- Tab switching ---
+          tabDashboardBtn.addEventListener("click", () => show("dashboardScreen"));
+          tabClientBtn.addEventListener("click", () => show("clientScreen"));
+          tabFreelancerBtn.addEventListener("click", async () => {
+            try {
+              // show freelancer screen first
+              show("freelancerScreen");
+
+              // then fetch & display tasks
+              const responseData = await fetchTasksApi();
+              displayTasks(responseData);
+            } catch (err) {
+              console.error("❌ Failed to load tasks:", err);
+              alert("Could not load tasks. Please try again.");
+            }
+          });
+
+
+
+          // --- Client-side Task Management ---
+          createTaskForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const task = {
+              title: document.getElementById("taskTitle").value.trim(),
+              budget: parseFloat(document.getElementById("taskBudget").value),
+              description: document.getElementById("taskDesc").value.trim(),
+              deadline: document.getElementById("taskDeadline").value.trim(),
+              taskLink: document.getElementById("taskLink").value.trim(),
+              submissionLink: document.getElementById("submissionLink").value.trim(),
+              paymentLink: document.getElementById("paymentLink").value.trim()
+            };
+            const res = await createTaskApi(task);
+            if (res.error) {
+              alert(res.error);
+            } else {
+              alert("Task posted successfully!");
+              createTaskForm.reset();
+              show("dashboardScreen");
+
+            }
+          });
+
+          refreshTasksBtn.addEventListener("click", async () => {
+            const tasks = await fetchTasksApi();
+            displayTasks(tasks);
+          });
+
+          // --- Display tasks in the UI ---
+          function displayTasks(responseData) {
+            tasksContainer.innerHTML = "";
+
+            // Always read from responseData.tasks
+            const tasks = responseData?.tasks || [];
+
+            if (tasks.length === 0) {
+              tasksContainer.innerHTML = `<p class="active">Your free trials are over. Please subscribe to continue! </p>`;
+              return;
+            }
+
+            tasks.forEach(task => {
+              const card = document.createElement("div");
+              card.className = "card";
+              card.innerHTML = `
       <div class="task-row">
         <h3>${escapeHTML(task.title)}</h3>
         <div class="task-meta muted">
@@ -698,12 +824,12 @@
         </div>
       </div>
     `;
-            tasksContainer.appendChild(card);
-          });
-        }
+              tasksContainer.appendChild(card);
+            });
+          }
 
-      });
-    </script>
+        });
+      </script>
   </div>
 </body>
 
